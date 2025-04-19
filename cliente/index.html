@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Usuarios</title>
+    <script>
+        // Función para consultar la API y mostrar los usuarios
+        async function obtenerUsuarios() {
+            try {
+                console.log('Consultando a la API en:', 'http://127.0.0.1:5000/api/usuarios');
+                const response = await fetch('http://127.0.0.1:5000/api/usuarios'); // URL completa de la API
+                const data = await response.json(); // Convierte la respuesta a JSON
+
+                if (data.success) {
+                    const usuarios = data.usuarios;
+                    const listaUsuarios = document.getElementById('lista-usuarios');
+                    listaUsuarios.innerHTML = ''; // Limpia la lista antes de agregar nuevos usuarios
+
+                    // Itera sobre los usuarios y los agrega a la lista
+                    usuarios.forEach(usuario => {
+                        const li = document.createElement('li');
+                        li.textContent = `${usuario.nombre} - ${usuario.curso}`;
+                        listaUsuarios.appendChild(li);
+                    });
+                } else {
+                    console.error('Error al obtener usuarios:', data.message);
+                    alert('No se pudieron obtener los usuarios.');
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+                alert('Ocurrió un error al consultar la API.');
+            }
+        }
+
+        // Llama a la función cuando la página se carga
+        window.onload = obtenerUsuarios;
+    </script>
+</head>
+<body>
+    <h1>Lista de Usuarios</h1>
+    <ul id="lista-usuarios">
+        <!-- Aquí se agregarán los usuarios dinámicamente -->
+    </ul>
+</body>
+</html>

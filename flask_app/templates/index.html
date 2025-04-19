@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario y Lista de Usuarios</title>
+</head>
+<body>
+    <h1>Formulario de Registro</h1>
+    <form action="/register" method="POST">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <br>
+        <label for="curso">Curso:</label>
+        <input type="text" id="curso" name="curso" required>
+        <br>
+        <button type="submit">Registrar</button>
+    </form>
+
+    <h2>Lista de Usuarios</h2>
+    {% if Usuarios %}
+        <ul>
+            {% for user in Usuarios %}
+                <li>{{ user.nombre }} - {{ user.curso }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay usuarios registrados.</p>
+    {% endif %}
+</body>
+</html>
