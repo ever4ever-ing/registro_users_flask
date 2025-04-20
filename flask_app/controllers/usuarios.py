@@ -58,23 +58,32 @@ def api_usuarios():
     elif request.method == 'POST':
         try:
             data = request.get_json()  # Obtiene los datos enviados en formato JSON
-            if not data or 'nombre' not in data or 'curso' not in data:
-                logging.error("Datos incompletos para crear usuario.")
+            logging.info(f"Datos recibidos en el cuerpo de la solicitud: {data}")
+            
+            if not data:
+                logging.error("No se recibieron datos en la solicitud.")
+                return jsonify({"success": False, "message": "No se recibieron datos"}), 400
+            
+            if 'nombre' not in data or 'curso' not in data:
+                logging.error(f"Datos incompletos: {data}")
                 return jsonify({"success": False, "message": "Datos incompletos"}), 400
             
             usuario_data = {
                 "nombre": data['nombre'],
                 "curso": data['curso']
             }
-            logging.info(f"Datos recibidos para crear usuario: {usuario_data}")
+            logging.info(f"Datos procesados para crear usuario: {usuario_data}")
             
             usuario_id = Usuario.save(usuario_data)
             if not usuario_id:
                 logging.error("No se pudo guardar el usuario en la base de datos.")
                 return jsonify({"success": False, "message": "Error al guardar usuario"}), 500
             
-            logging.info(f"Usuario creado con ID: {usuario_id}")
+            logging.info(f"Usuario creado exitosamente con ID: {usuario_id}")
             return jsonify({"success": True, "message": "Usuario creado exitosamente", "id_usuario": usuario_id}), 201
+        except KeyError as ke:
+            logging.error(f"Clave faltante en los datos enviados: {ke}")
+            return jsonify({"success": False, "message": f"Clave faltante: {ke}"}), 400
         except Exception as e:
-            logging.error(f"Error al crear usuario: {e}")
-            return jsonify({"success": False, "message": "Error al crear usuario"}), 500
+            logging.error(f"Error inesperado al crear usuario: {e}")
+            return jsonify({"success": False, "message": "Error inesperado al crear usuario"}), 500
