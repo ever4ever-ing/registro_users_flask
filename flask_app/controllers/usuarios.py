@@ -7,7 +7,6 @@ from functools import wraps
 
 
 
-
 @app.route("/")
 def index():
     Usuarios = Usuario.get_all()
