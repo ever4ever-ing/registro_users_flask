@@ -55,7 +55,7 @@ def api_usuarios():
         except Exception as e:
             logging.error(f"Error al obtener usuarios: {e}")
             return jsonify({"success": False, "message": "Error al obtener usuarios"}), 500
-    elif request.method == 'POST':POST'])
+    elif request.method == 'POST':
         try:
             data = request.get_json()  # Obtiene los datos enviados en formato JSON
             if not data or 'nombre' not in data or 'curso' not in data:
