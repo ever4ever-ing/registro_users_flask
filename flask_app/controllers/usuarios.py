@@ -37,20 +37,44 @@ def crear_usuario():
         session['usuario_id'] = usuario_id
     return redirect('/')
 
-@app.route('/api/usuarios', methods=['GET'])
-def api_get_usuarios():
-    try:
-        usuarios = Usuario.get_all()
-        # Convertir los objetos Usuario a diccionarios
-        usuarios_json = [
-            {
-                "id_usuario": usuario.id_usuario,
-                "nombre": usuario.nombre,
-                "curso": usuario.curso
+@app.route('/api/usuarios', methods=['GET', 'POST'])
+def api_usuarios():
+    if request.method == 'GET':
+        try:
+            usuarios = Usuario.get_all()
+            # Convertir los objetos Usuario a diccionarios
+            usuarios_json = [
+                {
+                    "id_usuario": usuario.id_usuario,
+                    "nombre": usuario.nombre,
+                    "curso": usuario.curso
+                }
+                for usuario in usuarios
+            ]
+            return jsonify({"success": True, "usuarios": usuarios_json}), 200
+        except Exception as e:
+            logging.error(f"Error al obtener usuarios: {e}")
+            return jsonify({"success": False, "message": "Error al obtener usuarios"}), 500
+    elif request.method == 'POST':POST'])
+        try:
+            data = request.get_json()  # Obtiene los datos enviados en formato JSON
+            if not data or 'nombre' not in data or 'curso' not in data:
+                logging.error("Datos incompletos para crear usuario.")
+                return jsonify({"success": False, "message": "Datos incompletos"}), 400
+            
+            usuario_data = {
+                "nombre": data['nombre'],
+                "curso": data['curso']
             }
-            for usuario in usuarios
-        ]
-        return jsonify({"success": True, "usuarios": usuarios_json}), 200
-    except Exception as e:
-        logging.error(f"Error al obtener usuarios: {e}")
-        return jsonify({"success": False, "message": "Error al obtener usuarios"}), 500
+            logging.info(f"Datos recibidos para crear usuario: {usuario_data}")
+            
+            usuario_id = Usuario.save(usuario_data)
+            if not usuario_id:
+                logging.error("No se pudo guardar el usuario en la base de datos.")
+                return jsonify({"success": False, "message": "Error al guardar usuario"}), 500
+            
+            logging.info(f"Usuario creado con ID: {usuario_id}")
+            return jsonify({"success": True, "message": "Usuario creado exitosamente", "id_usuario": usuario_id}), 201
+        except Exception as e:
+            logging.error(f"Error al crear usuario: {e}")
+            return jsonify({"success": False, "message": "Error al crear usuario"}), 500
